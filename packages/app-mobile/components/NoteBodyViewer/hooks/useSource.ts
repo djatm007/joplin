@@ -26,8 +26,7 @@ const useSource = (rendererSource: PageSetupSources, themeId: number) => {
 				white-space: pre-wrap;
 				overflow-x: hidden;
 			}
-
-			/* pre设置 */
+			
 		  pre {
 			font-family: "Consolas", "Courier New";
 			border: 2px solid #000000;
