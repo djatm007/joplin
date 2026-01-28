@@ -27,6 +27,29 @@ const useSource = (rendererSource: PageSetupSources, themeId: number) => {
 				overflow-x: hidden;
 			}
 
+			/* pre设置 */
+		  pre {
+			font-family: "Consolas", "Courier New";
+			border: 2px solid #000000;
+			padding: 5px 5px;
+			margin: 0.5em 0em;
+			font-size: 1em;
+			line-height: 1.2em;
+			max-width: 100%;
+			-ms-overflow: auto;
+			-moz-overflow: auto;
+			-webkit-overflow: auto;
+			overflow: auto;
+			white-space: pre;
+		  }
+		
+		  pre code {
+			font-size: 1em;
+			font-weight: normal;
+			white-space: pre;
+			background: transparent;
+		  }
+
 			body {
 				padding-left: ${Number(paddingLeft)}px;
 				padding-right: ${Number(paddingRight)}px;
