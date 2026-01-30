@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   AssembleRelease:
-    if: github.repository == 'djatm007/joplin'
+    if: github.repository == 'djatm007/joplin-fork'
     runs-on: ubuntu-latest
     steps:
       - name: Install Linux dependencies
