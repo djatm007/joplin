@@ -72,7 +72,7 @@ jobs:
       - name: Upload signed APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: joplin-android-signed-apk
+          name: joplin-fork-android-signed-apk
           path: packages/app-mobile/android/app/build/outputs/apk/release/app-release-signed.apk
           if-no-files-found: error
           retention-days: 7
