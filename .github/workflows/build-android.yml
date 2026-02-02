@@ -69,6 +69,14 @@ jobs:
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
+      - name: Upload signed APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: joplin-android-signed-apk
+          path: packages/app-mobile/android/app/build/outputs/apk/release/app-release-signed.apk
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Rename signed APK for release
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         run: |
@@ -93,14 +101,6 @@ jobs:
           # 可选：打印 SHA256 供 release body 使用
           SHA256=$(sha256sum "$NEW_NAME" | cut -d' ' -f1)
           echo "SHA256=$SHA256" >> $GITHUB_ENV
-
-      - name: Upload signed APK as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: joplin-android-signed-apk
-          path: packages/app-mobile/android/app/build/outputs/apk/release/joplin-fork-android-${{ github.ref_name }}.apk
-          if-no-files-found: error
-          retention-days: 7
 
       # ────────────── 只有 push tag 时才创建 Release ──────────────
       - name: Create GitHub Release & Upload APK
