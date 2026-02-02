@@ -56,7 +56,8 @@ jobs:
       - name: Build Android Release (unsigned)
         run: |
           cd packages/app-mobile/android
-          ./gradlew assembleRelease --no-daemon
+          sed -i -- 's/signingConfig signingConfigs.release/signingConfig signingConfigs.debug/' app/build.gradle
+          ./gradlew assembleRelease
 
       - name: Sign APK
         id: sign
