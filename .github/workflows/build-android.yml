@@ -63,9 +63,9 @@ jobs:
         id: sign
         uses: ilharp/sign-android-release@v2
         with:
-          releaseDirectory: packages/app-mobile/android/app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          releaseDir: packages/app-mobile/android/app/build/outputs/apk/release   # 你的 unsigned APK 所在目录
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}                         # ← 这里必须是 signingKey
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
