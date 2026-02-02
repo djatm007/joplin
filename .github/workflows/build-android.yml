@@ -109,7 +109,7 @@ jobs:
         with:
           files: packages/app-mobile/android/app/build/outputs/apk/release/joplin-fork-android-${{ github.ref_name }}.apk
           tag_name: ${{ github.ref_name }}
-          name: Joplin-Fork Android ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
           body: |
             Auto-built signed APK for ${{ github.ref_name }}
 
