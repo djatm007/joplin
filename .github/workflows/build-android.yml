@@ -69,18 +69,11 @@ jobs:
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      - name: Zipalign signed APK
-        run: |
-          cd packages/app-mobile/android/app/build/outputs/apk/release
-          BUILD_TOOLS_PATH="$ANDROID_HOME/build-tools/"
-          ZIPALIGN_PATH="$(find "$BUILD_TOOLS_PATH" -name "zipalign" -print | sort | tail -n1)"
-          "$ZIPALIGN_PATH" -v -p 4 "${{ steps.sign.outputs.signedReleaseFile }}" app-release-aligned.apk
-
       - name: Upload signed APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: joplin-android-signed-apk
-          path: packages/app-mobile/android/app/build/outputs/apk/release/app-release-aligned.apk
+          path: packages/app-mobile/android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
           retention-days: 7
 
@@ -89,7 +82,7 @@ jobs:
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: packages/app-mobile/android/app/build/outputs/apk/release/app-release-aligned.apk
+          files: packages/app-mobile/android/app/build/outputs/apk/release/*.apk
           tag_name: ${{ github.ref_name }}
           name: Joplin-Fork Android ${{ github.ref_name }}
           body: |
@@ -97,7 +90,7 @@ jobs:
 
             - Commit: ${{ github.sha }}
             - Built by GitHub Actions
-            - SHA256: $(sha256sum packages/app-mobile/android/app/app-release-aligned.apk | cut -d' ' -f1)
+            - SHA256: $(sha256sum packages/app-mobile/android/app/build/outputs/apk/release/*.apk | cut -d' ' -f1)
           generate_release_notes: true
           draft: false
           prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
