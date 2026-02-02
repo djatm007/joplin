@@ -63,17 +63,42 @@ jobs:
         id: sign
         uses: ilharp/sign-android-release@v2
         with:
-          releaseDir: packages/app-mobile/android/app/build/outputs/apk/release   # 你的 unsigned APK 所在目录
-          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}                         # ← 这里必须是 signingKey
+          releaseDir: packages/app-mobile/android/app/build/outputs/apk/release # 你的 unsigned APK 所在目录
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }} # ← 这里必须是 signingKey
           keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Rename signed APK for release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: |
+          cd packages/app-mobile/android/app/build/outputs/apk/release
+
+          # 原文件
+          ORIGINAL_APK="app-release-signed.apk"
+
+          # 新文件名示例：joplin-fork-android-v1.2.3.apk（使用 tag 名）
+          # 你可以自定义格式，例如加日期、架构等
+          NEW_NAME="joplin-fork-android-${{ github.ref_name }}.apk"
+
+          if [ ! -f "$ORIGINAL_APK" ]; then
+            echo "Original APK not found: $ORIGINAL_APK"
+            ls -la .
+            exit 1
+          fi
+
+          cp "$ORIGINAL_APK" "$NEW_NAME"
+          echo "Renamed $ORIGINAL_APK → $NEW_NAME"
+
+          # 可选：打印 SHA256 供 release body 使用
+          SHA256=$(sha256sum "$NEW_NAME" | cut -d' ' -f1)
+          echo "SHA256=$SHA256" >> $GITHUB_ENV
 
       - name: Upload signed APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: joplin-android-signed-apk
-          path: packages/app-mobile/android/app/build/outputs/apk/release/*.apk
+          path: packages/app-mobile/android/app/build/outputs/apk/release/joplin-fork-android-${{ github.ref_name }}.apk
           if-no-files-found: error
           retention-days: 7
 
@@ -82,7 +107,7 @@ jobs:
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: packages/app-mobile/android/app/build/outputs/apk/release/*.apk
+          files: packages/app-mobile/android/app/build/outputs/apk/release/joplin-fork-android-${{ github.ref_name }}.apk
           tag_name: ${{ github.ref_name }}
           name: Joplin-Fork Android ${{ github.ref_name }}
           body: |
@@ -90,7 +115,8 @@ jobs:
 
             - Commit: ${{ github.sha }}
             - Built by GitHub Actions
-            - SHA256: $(sha256sum packages/app-mobile/android/app/build/outputs/apk/release/*.apk | cut -d' ' -f1)
+            - File: joplin-fork-android-${{ github.ref_name }}.apk
+            - SHA256: ${{ env.SHA256 }}
           generate_release_notes: true
           draft: false
           prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
